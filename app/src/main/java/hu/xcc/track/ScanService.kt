@@ -145,13 +145,10 @@ class ScanService : Service() {
 
                     var fusedLoc = LocationServices.getFusedLocationProviderClient(context)
 
-                    //if(BuildConfig.logging) Lg.wlog(sharedPref,"loc conn=null");
-                    //Lg.i(TAG,"request location");
                     val locationRequest = LocationRequest.create()
                         .setPriority(LocationRequest.PRIORITY_LOW_POWER)
                         .setInterval(15000)
                         .setFastestInterval(1000)
-                    //noinspection MissingPermission
 
                     locationCallback = object : LocationCallback() {
                         override fun onLocationResult(locationResult: LocationResult) {

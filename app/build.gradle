@@ -3,13 +3,17 @@ plugins {
     id 'kotlin-android'
 }
 
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+def keystoreProperties = new Properties()
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
 android {
     signingConfigs {
-        key0 {
-            storeFile file('C:\\Studio\\xcc_track_key.jks')
-            storePassword '2a7x3b2x1c9c79'
-            keyPassword '2a7x3b2x1c9c79'
-            keyAlias 'key0'
+        config {
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile file(keystoreProperties['storeFile'])
+            storePassword keystoreProperties['storePassword']
         }
     }
     compileSdkVersion 29
@@ -31,7 +35,7 @@ android {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.key0
+            signingConfig signingConfigs.config
         }
     }
     compileOptions {

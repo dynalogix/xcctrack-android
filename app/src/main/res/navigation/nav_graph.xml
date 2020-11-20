@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/FirstFragment"
         android:name="hu.xcc.track.TrackLogFragment"
-        android:label="@string/first_fragment_label"
+        android:label="@string/log_fragment_label"
         tools:layout="@layout/fragment_track_log">
 
         <action
@@ -18,7 +18,7 @@
     <fragment
         android:id="@+id/SecondFragment"
         android:name="hu.xcc.track.SettingsFragment"
-        android:label="@string/second_fragment_label"
+        android:label="@string/settings_fragment_label"
         tools:layout="@layout/fragment_settings">
 
         <action

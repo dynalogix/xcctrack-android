@@ -32,6 +32,18 @@
         app:seekBarIncrement="30"
         />
 
+    <PreferenceCategory android:title="@string/gps" app:allowDividerAbove="true" app:allowDividerBelow="true">
+    <SeekBarPreference
+        android:defaultValue="20"
+        android:max="100"
+        android:title="@string/gps_accuracy"
+        android:key="gps_accuracy"
+        android:icon="@drawable/gps_accuracy"
+        app:showSeekBarValue="true"
+        app:min="5"
+        app:seekBarIncrement="5"
+        />
+
     <SeekBarPreference
         android:defaultValue="15"
         android:max="300"
@@ -53,7 +65,9 @@
         app:min="1"
         app:seekBarIncrement="1"
         />
+    </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/action_track_log">
     <EditTextPreference
         android:defaultValue="https://data.4mhu.com/upload_data/"
         android:key="url"
@@ -73,6 +87,6 @@
         app:min="1"
         app:seekBarIncrement="1"
         />
-
+    </PreferenceCategory>
 
 </PreferenceScreen>

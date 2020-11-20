@@ -2,6 +2,8 @@ package hu.xcc.track
 
 class aC {
     companion object {
+        val running="running"
+
         val fixPointName="fixpoint_name"
         val defFixPointName="NONE"
 
@@ -10,6 +12,9 @@ class aC {
 
         val GpsInterval="gps_interval"
         val defGpsInterval=15
+
+        val GpsAccuracy="gps_accuracy"
+        val defMinAccuracy=20
 
         val GpsFastInterval="gps_fast_interval"
         val defGpsFastInterval=1

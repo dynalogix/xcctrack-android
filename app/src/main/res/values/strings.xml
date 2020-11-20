@@ -1,22 +1,19 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools"
+    >
     <string name="app_name">XCC Tracker</string>
     <string name="action_settings">Settings</string>
-    <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="second_fragment_label">Second Fragment</string>
-    <string name="next">Next</string>
-    <string name="previous">Previous</string>
 
-    <string name="hello_first_fragment">Hello first fragment</string>
-    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="log_fragment_label">Scan log</string>
+    <string name="settings_fragment_label">Settings</string>
+
     <string name="start_stop">Start/stop tracking</string>
-    <string name="action_track_log">Track</string>
+    <string name="action_track_log">Logging</string>
     <string name="scan_service_active">Scan service running</string>
 
     <string name="no_bluetooth">No bluetooth</string>
 
     <string name="notification_status">Accuracy: %f Beacons: %d</string>
-    <string name="notification_no_beacons_nearby">No BT nearby</string>
+    <string name="notification_no_beacons_nearby">No beacon nearby</string>
     <string name="notification_no_change">No change</string>
     <string name="notification_no_location">Waiting for location</string>
     <string name="notification_could_not_send">Cannot reach server</string>
@@ -31,4 +28,8 @@
     <string name="purge">Purge old sent entries (days)</string>
     <string name="restore_defaults">Restore defaults</string>
     <string name="default_confirm">This will clear all settings. Sure?</string>
+    <string name="gps_accuracy">Minimum location accuracy (meter)</string>
+    <string name="gps">GPS</string>
+    <string name="stopped">Scanner stopped</string>
+    <string name="started">Scanner started - you can exit app\nSee status in notification</string>
 </resources>

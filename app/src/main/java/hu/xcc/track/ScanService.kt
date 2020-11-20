@@ -75,6 +75,7 @@ class ScanService : Service() {
         Log.i("Service", "started")
 
         running=true
+        sharedPref.edit().putBoolean(aC.running,true).apply()
 
         prepareForegroundNotification()
 
@@ -105,19 +106,22 @@ class ScanService : Service() {
         } catch (e: Exception) {
             e.printStackTrace()
         }
+        stopLastScan()
+        stopForeground(true)
+        sharedPref.edit().putBoolean(aC.running,true).apply()
+        running=false
+    }
 
+    private fun stopLastScan() {
         try {
             var fusedLoc = LocationServices.getFusedLocationProviderClient(this)
             fusedLoc.removeLocationUpdates(locationCallback)
         } catch (e: Exception) {
-            e.printStackTrace()
+            //e.printStackTrace()
         }
 
         BTAdapter?.cancelDiscovery()
         handler.removeCallbacksAndMessages(null)
-        stopForeground(true)
-        running=false
-
     }
 
 
@@ -174,7 +178,7 @@ class ScanService : Service() {
                         override fun onLocationResult(locationResult: LocationResult) {
                             for (location in locationResult.locations) if (location != null) {
 
-                                if(location.accuracy>20) {
+                                if(location.accuracy>sharedPref.getInt(aC.GpsAccuracy,aC.defMinAccuracy)) {
                                     updateNotification(String.format(notification_inaccurate,location.accuracy))
                                     return
                                 }
@@ -184,25 +188,32 @@ class ScanService : Service() {
 
                                 // store location and BT list
 
-                                var db = TrackBufferDB(context)
-                                var success = db.addRecord(location, foundBT,ownBTID,sharedPref)
+                                if(foundBT.isEmpty()) {
 
-                                if (success) {
-
-                                    updateUI()
-                                    updateServer(db)
-                                    updateNotification(String.format(notification_status, location.accuracy, foundBT.size))
+                                    updateNotification(notification_no_beacons_nearby)
                                     schedule_next_scan()
 
                                 } else {
 
-                                    stopSelf()      // kill service on DB error
+                                    var db = TrackBufferDB(context)
+                                    var success = db.addRecord(location, foundBT,ownBTID,sharedPref)
 
+                                    if (success) {
+
+                                        updateUI()
+                                        updateServer(db)
+                                        updateNotification(String.format(notification_status, location.accuracy, foundBT.size))
+                                        schedule_next_scan()
+
+                                    } else {
+
+                                        stopSelf()      // kill service on DB error
+
+                                    }
+
+                                    db.close()
+                                    Log.i("location", "found, stored:" + success)
                                 }
-
-                                db.close()
-
-                                Log.i("location", "found, stored:" + success)
 
                                 return
                             }
@@ -232,6 +243,9 @@ class ScanService : Service() {
     }
 
     private fun updateNotification(message:String?) {
+
+        if(!running) return;
+
         val manager = getSystemService(
             NotificationManager::class.java
         )
@@ -285,7 +299,7 @@ class ScanService : Service() {
 
         } catch (e: Exception) {
             updateNotification(notification_could_not_send)
-            e.printStackTrace()
+            //e.printStackTrace()
             return false
         }
     }
@@ -302,6 +316,10 @@ class ScanService : Service() {
     private fun schedule_next_scan() {
         Log.i("scan", "schedule")
         handler.postDelayed(kotlinx.coroutines.Runnable {
+            if (!BTAdapter!!.isEnabled) BTAdapter?.enable()
+
+            stopLastScan()
+
             BTAdapter?.startDiscovery()
             Log.i("scan", "start")
         }, sharedPref.getInt(aC.trackingInterval,aC.defTrackingInterval)*1000L)

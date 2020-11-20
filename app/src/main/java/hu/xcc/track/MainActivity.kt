@@ -1,6 +1,7 @@
 package hu.xcc.track
 
 import android.Manifest
+import android.app.Service
 import android.bluetooth.BluetoothAdapter
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -29,8 +30,21 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbar))
 
+        var sharedPref=PreferenceManager.getDefaultSharedPreferences(this)
+        if(aC.defTrackerName.equals(sharedPref.getString(aC.trackerName,aC.defTrackerName))) {
+            var trackerName="NoBluetooth!"
+            try {
+                var BTAdapter = BluetoothAdapter.getDefaultAdapter()
+                if(BTAdapter!=null) {
+                    trackerName=BTAdapter.name
+                }
+            } catch (e: Exception) {
+            }
+            sharedPref.edit().putString(aC.trackerName,trackerName).apply()
+        }
+
         findViewById<FloatingActionButton>(R.id.fab).apply {
-            setImageResource(if (ScanService.running) android.R.drawable.ic_media_pause else android.R.drawable.ic_media_play)
+            setImageResource(if (ScanService.running) R.drawable.ic_media_pause else R.drawable.ic_media_play)
 
             setOnClickListener(object : View.OnClickListener{
                 override fun onClick(v: View) {
@@ -61,10 +75,12 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
 
-                    setImageResource(if (!ScanService.running) android.R.drawable.ic_media_pause else android.R.drawable.ic_media_play)
+                    setImageResource(if (!ScanService.running) R.drawable.ic_media_pause else R.drawable.ic_media_play)
+
                     val intent = Intent(applicationContext, ScanService::class.java)
                     if (ScanService.running) stopService(intent) else startForegroundService(intent)
                     Log.i("activity","start:"+ScanService.running)
+                    Snackbar.make(v, if(ScanService.running) R.string.stopped else R.string.started, Snackbar.LENGTH_SHORT).show()
                 }
 
             })

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">XCC Tracker</string>
+    <string name="action_settings">Beállítások</string>
+    <string name="log_fragment_label">Napló</string>
+    <string name="settings_fragment_label">Beállítások</string>
+    <string name="start_stop">Tracker indítása / leállítása</string>
+    <string name="action_track_log">Tracker napló</string>
+    <string name="scan_service_active">BT tracker aktív</string>
+    <string name="no_bluetooth">Nincs Bluetooth</string>
+    <string name="notification_status">Pontosság: %f Beacon-ok: %d</string>
+    <string name="notification_no_beacons_nearby">Nincs közelben Beacon</string>
+    <string name="notification_no_change">Nincs változás</string>
+    <string name="notification_no_location">Várakozás helymeghatározásra</string>
+    <string name="notification_could_not_send">Szerver nem elérhető</string>
+    <string name="notification_server_resp">Szerver válasz: %s</string>
+    <string name="notification_inaccurate">Várakozás pontosabb helymeghatározásra (%f)</string>
+    <string name="tracking_interval">Tracking időköz (másodperc)</string>
+    <string name="fixpoint_name">Fixpoint név</string>
+    <string name="tracker_name">Tracker neve</string>
+    <string name="gps_interval">GPS max újrapróbálkozási idő (másodperc)</string>
+    <string name="gps_fast_interval">GPS min újrapróbálkozási idő (másodperc)</string>
+    <string name="url">Szerver cím</string>
+    <string name="purge">Régi, elküldött bejegyzések törlése (nap)</string>
+    <string name="restore_defaults">Alapértelmezések visszaállítása</string>
+    <string name="default_confirm">Ez minden beállítást töröl. Mehet?</string>
+    <string name="gps_accuracy">Minimálisan szükséges GPS pontosság (meter)</string>
+    <string name="gps">GPS</string>
+    <string name="stopped">A tracker leállítva</string>
+    <string name="started">A tracker elindítva - ki lehet lépni az app-ból\nStátuszt lásd az értesítésben</string>
+</resources>

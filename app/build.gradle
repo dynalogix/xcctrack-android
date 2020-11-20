@@ -3,7 +3,7 @@ plugins {
     id 'kotlin-android'
 }
 
-// local props
+// local props updated
 def keystorePropertiesFile = rootProject.file("keystore.properties")
 def keystoreProperties = new Properties()
 keystoreProperties.load(new FileInputStream(keystorePropertiesFile))

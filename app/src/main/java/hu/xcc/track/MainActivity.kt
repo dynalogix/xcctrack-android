@@ -12,6 +12,8 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.navigation.findNavController
+import androidx.preference.PreferenceManager
+import com.google.android.gms.cast.framework.PrecacheManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 
@@ -95,6 +97,15 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.action_track_log -> {
                 findNavController(R.id.nav_host_fragment).navigate(R.id.action_settings_to_log)
+                true
+            }
+            R.id.action_defaults -> {
+                Snackbar.make(findViewById(R.id.nav_host_fragment), getString(R.string.default_confirm), Snackbar.LENGTH_LONG)
+                        .setAction(getString(R.string.restore_defaults), View.OnClickListener {
+                            PreferenceManager.getDefaultSharedPreferences(this).edit().clear().apply()
+                            findNavController(R.id.nav_host_fragment).navigate(R.id.action_settings_to_log)
+                        })
+                        .show()
                 true
             }
             else -> super.onOptionsItemSelected(item)

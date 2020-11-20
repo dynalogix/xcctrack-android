@@ -31,6 +31,7 @@ class TrackLogFragment : Fragment() {
     ): View? {
         MainActivity.action_menu?.findItem(R.id.action_settings)?.setVisible(true)
         MainActivity.action_menu?.findItem(R.id.action_track_log)?.setVisible(false)
+        MainActivity.action_menu?.findItem(R.id.action_defaults)?.setVisible(false)
 
         return inflater.inflate(R.layout.fragment_track_log, container, false)
     }

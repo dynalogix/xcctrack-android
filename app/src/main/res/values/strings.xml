@@ -22,4 +22,13 @@
     <string name="notification_could_not_send">Cannot reach server</string>
     <string name="notification_server_resp">Server response: %s</string>
     <string name="notification_inaccurate">Waiting for accurate location (%f)</string>
+    <string name="tracking_interval">Tracking interval (sec)</string>
+    <string name="fixpoint_name">Fixpoint name</string>
+    <string name="tracker_name">Tracker name</string>
+    <string name="gps_interval">GPS retry max delay (sec)</string>
+    <string name="gps_fast_interval">GPS retry min delay (sec)</string>
+    <string name="url">Server URL</string>
+    <string name="purge">Purge old sent entries (days)</string>
+    <string name="restore_defaults">Restore defaults</string>
+    <string name="default_confirm">This will clear all settings. Sure?</string>
 </resources>

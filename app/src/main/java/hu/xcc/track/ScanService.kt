@@ -4,15 +4,13 @@ import android.Manifest
 import android.app.*
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import androidx.preference.PreferenceManager
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
@@ -41,6 +39,16 @@ class ScanService : Service() {
     private var lastBT: LinkedList<String> = LinkedList()
     var BTAdapter: BluetoothAdapter? =null
 
+    lateinit var notification_status : String
+    lateinit var notification_no_beacons_nearby: String
+    lateinit var notification_no_change: String
+    lateinit var notification_no_location: String
+    lateinit var notification_could_not_send: String
+    lateinit var notification_server_resp: String
+    lateinit var notification_inaccurate: String
+
+    lateinit var sharedPref : SharedPreferences
+
     companion object {
         var running=false
     }
@@ -49,6 +57,16 @@ class ScanService : Service() {
         super.onCreate()
         handler=Handler()
         Log.i("Service", "created")
+
+        notification_status=getText(R.string.notification_status) as String
+        notification_no_beacons_nearby=getString(R.string.notification_no_beacons_nearby)
+        notification_no_change=getString(R.string.notification_no_change)
+        notification_no_location=getString(R.string.notification_no_location)
+        notification_could_not_send=getString(R.string.notification_could_not_send)
+        notification_server_resp=getText(R.string.notification_server_resp) as String
+        notification_inaccurate= getText(R.string.notification_inaccurate) as String
+
+        sharedPref= PreferenceManager.getDefaultSharedPreferences(this)
     }
 
 
@@ -119,7 +137,7 @@ class ScanService : Service() {
                 BluetoothAdapter.ACTION_DISCOVERY_FINISHED -> {
                     Log.i("discovery", "finish")
 
-                    var msg=R.string.notification_no_beacons_nearby;
+                    var msg=notification_no_beacons_nearby;
 
                     var log = !foundBT.isEmpty()
                     if (log) {
@@ -130,14 +148,14 @@ class ScanService : Service() {
                         if (!log) for (item in foundBT) if (!lastBT.contains(item)) {
                             log = true; break
                         }
-                        msg=R.string.notification_no_change
+                        msg=notification_no_change
                     }
                     if (!log) {
                         var db = TrackBufferDB(context)
                         updateServer(db)
                         db.close()
                         schedule_next_scan()
-                        updateNotification(applicationContext.getString(msg))
+                        updateNotification(msg)
                         return
                     }
                     lastBT.clear()
@@ -147,15 +165,17 @@ class ScanService : Service() {
 
                     val locationRequest = LocationRequest.create()
                         .setPriority(LocationRequest.PRIORITY_LOW_POWER)
-                        .setInterval(15000)
-                        .setFastestInterval(1000)
+                        .setInterval(sharedPref.getInt(aC.GpsInterval,aC.defGpsInterval)*1000L)
+                        .setFastestInterval(sharedPref.getInt(aC.GpsFastInterval,aC.defGpsFastInterval)*1000L)
+
+                    val ownBTID= BTAdapter!!.name
 
                     locationCallback = object : LocationCallback() {
                         override fun onLocationResult(locationResult: LocationResult) {
                             for (location in locationResult.locations) if (location != null) {
 
                                 if(location.accuracy>20) {
-                                    updateNotification(applicationContext.getString(R.string.notification_inaccurate,location.accuracy))
+                                    updateNotification(String.format(notification_inaccurate,location.accuracy))
                                     return
                                 }
 
@@ -165,13 +185,13 @@ class ScanService : Service() {
                                 // store location and BT list
 
                                 var db = TrackBufferDB(context)
-                                var success = db.addRecord(location, foundBT)
+                                var success = db.addRecord(location, foundBT,ownBTID,sharedPref)
 
                                 if (success) {
 
                                     updateUI()
                                     updateServer(db)
-                                    updateNotification(applicationContext.getString(R.string.notification_status, location.accuracy, foundBT.size))
+                                    updateNotification(String.format(notification_status, location.accuracy, foundBT.size))
                                     schedule_next_scan()
 
                                 } else {
@@ -187,7 +207,7 @@ class ScanService : Service() {
                                 return
                             }
 
-                            updateNotification(applicationContext.getString(R.string.notification_no_location))
+                            updateNotification(notification_no_location)
                         }
                     }
                     if (ActivityCompat.checkSelfPermission(
@@ -215,7 +235,7 @@ class ScanService : Service() {
         val manager = getSystemService(
             NotificationManager::class.java
         )
-        manager.notify(AppConstants.LOCATION_SERVICE_NOTIF_ID, generateNotification(message))
+        manager.notify(aC.LOCATION_SERVICE_NOTIF_ID, generateNotification(message))
     }
 
     private fun updateServer(db: TrackBufferDB) {
@@ -225,7 +245,7 @@ class ScanService : Service() {
 
         Thread {
             var db=TrackBufferDB(applicationContext)
-            for (item in unsent) if (send(item.content)) db.sent(item.id)
+            for (item in unsent) if (send(item.content)) db.sent(item.id,sharedPref)
             db.close()
             updateUI()
         }.start()
@@ -234,7 +254,7 @@ class ScanService : Service() {
 
     private fun send(item: String?) : Boolean {
         try {
-            var connection = URL(AppConstants.URL).openConnection() as HttpURLConnection
+            var connection = URL(sharedPref.getString(aC.url,aC.defURL)).openConnection() as HttpURLConnection
 
             connection.setRequestMethod("POST")
             connection.setRequestProperty("Content-Type", "application/json")
@@ -259,12 +279,12 @@ class ScanService : Service() {
 
             var success=msg.equals("{\"success\": true}")
 
-            if(!success) updateNotification(applicationContext.getString(R.string.notification_server_resp,msg))
+            if(!success) updateNotification(String.format(notification_server_resp,msg))
 
             return success
 
         } catch (e: Exception) {
-            updateNotification(applicationContext.getString(R.string.notification_could_not_send))
+            updateNotification(notification_could_not_send)
             e.printStackTrace()
             return false
         }
@@ -284,13 +304,13 @@ class ScanService : Service() {
         handler.postDelayed(kotlinx.coroutines.Runnable {
             BTAdapter?.startDiscovery()
             Log.i("scan", "start")
-        }, 30000)
+        }, sharedPref.getInt(aC.trackingInterval,aC.defTrackingInterval)*1000L)
     }
 
     private fun prepareForegroundNotification() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val serviceChannel = NotificationChannel(
-                AppConstants.CHANNEL_ID,
+                aC.CHANNEL_ID,
                 getString(R.string.scan_service_active),
                 NotificationManager.IMPORTANCE_LOW
             )
@@ -299,17 +319,17 @@ class ScanService : Service() {
             )
             manager.createNotificationChannel(serviceChannel)
         }
-        startForeground(AppConstants.LOCATION_SERVICE_NOTIF_ID, generateNotification(null))
+        startForeground(aC.LOCATION_SERVICE_NOTIF_ID, generateNotification(null))
     }
 
     private fun generateNotification(message: String?): Notification? {
         val notificationIntent = Intent(this, MainActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(
             this,
-            AppConstants.SERVICE_LOCATION_REQUEST_CODE,
+            aC.SERVICE_LOCATION_REQUEST_CODE,
             notificationIntent, 0
         )
-        val notification = NotificationCompat.Builder(this, AppConstants.CHANNEL_ID)
+        val notification = NotificationCompat.Builder(this, aC.CHANNEL_ID)
             .setContentTitle(getString(R.string.scan_service_active))
             .setContentText(message)
             .setSmallIcon(R.drawable.ic_scanner_active)

@@ -16,4 +16,14 @@
         app:showAsAction="always"
         android:visible="false"
         />
+
+    <item
+        android:id="@+id/action_defaults"
+        android:orderInCategory="90"
+        android:title="@string/restore_defaults"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_defaults"
+        android:visible="false"
+        />
+
 </menu>

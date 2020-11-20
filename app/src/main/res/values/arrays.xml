@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="fixpoints">
+        <item>NONE</item>
+        <item>SP1</item>
+        <item>SP2</item>
+        <item>SP3</item>
+        <item>SP4</item>
+        <item>SP5</item>
+        <item>SP6</item>
+        <item>SP7</item>
+        <item>SP8</item>
+        <item>SP9</item>
+        <item>SP10</item>
+    </array>
+</resources>

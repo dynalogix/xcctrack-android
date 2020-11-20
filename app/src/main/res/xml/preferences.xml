@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <EditTextPreference
+        android:defaultValue="defTracker"
+        android:key="tracker_name"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        app:useSimpleSummaryProvider="true"
+        android:icon="@drawable/ic_tracker_name"
+        android:title="@string/tracker_name" />
+
+    <DropDownPreference
+        android:defaultValue="NONE"
+        android:key="fixpoint_name"
+        app:useSimpleSummaryProvider="true"
+        android:icon="@drawable/ic_fixpoint_name"
+        android:title="@string/fixpoint_name"
+        android:entries="@array/fixpoints"
+        android:entryValues="@array/fixpoints"
+        />
+
+    <SeekBarPreference
+        android:defaultValue="30"
+        android:max="600"
+        android:title="@string/tracking_interval"
+        android:key="tracking_interval"
+        android:icon="@drawable/ic_tracking_interval"
+        app:showSeekBarValue="true"
+        app:min="30"
+        app:seekBarIncrement="30"
+        />
+
+    <SeekBarPreference
+        android:defaultValue="15"
+        android:max="300"
+        android:title="@string/gps_interval"
+        android:key="gps_interval"
+        android:icon="@drawable/ic_gps_long"
+        app:showSeekBarValue="true"
+        app:min="15"
+        app:seekBarIncrement="15"
+        />
+
+    <SeekBarPreference
+        android:defaultValue="1"
+        android:max="60"
+        android:title="@string/gps_fast_interval"
+        android:key="gps_fast_interval"
+        android:icon="@drawable/ic_gps_short"
+        app:showSeekBarValue="true"
+        app:min="1"
+        app:seekBarIncrement="1"
+        />
+
+    <EditTextPreference
+        android:defaultValue="https://data.4mhu.com/upload_data/"
+        android:key="url"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        app:useSimpleSummaryProvider="true"
+        android:icon="@drawable/ic_url"
+        android:title="@string/url" />
+
+    <SeekBarPreference
+        android:defaultValue="4"
+        android:max="14"
+        android:title="@string/purge"
+        android:key="purge"
+        android:icon="@drawable/ic_purge"
+        app:showSeekBarValue="true"
+        app:min="1"
+        app:seekBarIncrement="1"
+        />
+
+
+</PreferenceScreen>

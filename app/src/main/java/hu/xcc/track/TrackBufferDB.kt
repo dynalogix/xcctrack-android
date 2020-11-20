@@ -2,9 +2,12 @@ package hu.xcc.track
 
 import android.content.ContentValues
 import android.content.Context
+import android.content.SharedPreferences
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.location.Location
+import androidx.preference.PreferenceManager
+import com.google.android.gms.cast.framework.PrecacheManager
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.*
@@ -57,16 +60,16 @@ class TrackBufferDB(context: Context) : SQLiteOpenHelper(
     }
 
 
-    public fun addRecord(location: Location, foundBT: LinkedList<String>) :Boolean {
+    public fun addRecord(location: Location, foundBT: LinkedList<String>, ownBTID:String, sharedPref: SharedPreferences) :Boolean {
 
         val db=this.writableDatabase
         val values=ContentValues()
 
         var entry=JSONObject()
         entry.put("date",(System.currentTimeMillis()/1000).toString())
-        entry.put("tracker_name","gergo")
-        entry.put("own_btid","Gergo Note 10")
-        entry.put("fixpoint_name","SP1")
+        entry.put("tracker_name",sharedPref.getString(aC.trackerName,aC.defTrackerName))
+        entry.put("own_btid",ownBTID)
+        entry.put("fixpoint_name",sharedPref.getString(aC.fixPointName,aC.defFixPointName))
         entry.put("latitude", location.latitude.toString())
         entry.put("longitude", location.longitude.toString())
         entry.put("discovery_list", JSONArray(foundBT))
@@ -109,7 +112,7 @@ class TrackBufferDB(context: Context) : SQLiteOpenHelper(
         return list
     }
 
-    fun sent(id: Long) : Boolean {
+    fun sent(id: Long, sharedPref: SharedPreferences) : Boolean {
         val db=this.writableDatabase
         val values=ContentValues()
 
@@ -117,7 +120,8 @@ class TrackBufferDB(context: Context) : SQLiteOpenHelper(
         val success=db.update(TABLE_LOG, values, "$KEY_ID=?", arrayOf(id.toString()))
 
         if(success==1) {
-            var old=System.currentTimeMillis()-AppConstants.PURGE_TIME       // 1 hour
+            var purge=sharedPref.getInt(aC.purge,aC.defPurge)
+            var old=System.currentTimeMillis()-aC.purgeTime*purge
             db.delete(TABLE_LOG,"$KEY_SENT=$TRUE AND $KEY_TIMESTAMP<?",arrayOf((old).toString()))
         }
 

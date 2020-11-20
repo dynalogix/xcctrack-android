@@ -4,6 +4,14 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        key0 {
+            storeFile file('C:\\Studio\\xcc_track_key.jks')
+            storePassword '2a7x3b2x1c9c79'
+            keyPassword '2a7x3b2x1c9c79'
+            keyAlias 'key0'
+        }
+    }
     compileSdkVersion 29
 
     viewBinding {
@@ -17,13 +25,13 @@ android {
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.key0
         }
     }
     compileOptions {
@@ -49,5 +57,6 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
     implementation 'com.google.android.gms:play-services:12.0.1'
+    implementation 'androidx.preference:preference:1.1.1'
 
 }
